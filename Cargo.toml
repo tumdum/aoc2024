@@ -1,0 +1,37 @@
+[package]
+name = "aoc24"
+version = "0.1.0"
+edition = "2021"
+authors = ["Tomasz Kłak <tomasz@tomaszklak.pl>"]
+
+[dependencies]
+maplit="1"
+rustc-hash = "2"
+itertools = "0.13"
+regex="1"
+# once_cell = "1"
+memmap = "0.7"
+anyhow = "1"
+smallvec = { version = "1", features = ["const_generics"] }
+rayon = "1"
+num = "0.4"
+proptest = "1"
+proptest-derive = "0.5"
+smol_str = "0.3"
+clap = { version = "4.5.21", features = ["derive"] }
+# polyfit-rs = "0.2.1"
+# reikna = "0.12.3"
+# z3 = { version = "0.12.1", features = ["static-link-z3"] }
+
+[dev-dependencies]
+criterion = "0.3"
+proptest = "1"
+proptest-derive = "0.5"
+
+[[bench]]
+name = "benchmarks"
+harness = false
+
+[profile.release]
+lto = "fat"
+
