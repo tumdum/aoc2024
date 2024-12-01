@@ -21,4 +21,4 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
     - name: Run
-      run: cargo run --release -- --skip-output 2>/dev/null
+      run: cargo run --release -- --skip-output --loops  10 2>/dev/null
