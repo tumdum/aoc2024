@@ -2,15 +2,16 @@ use anyhow::Result;
 use rustc_hash::FxHashMap;
 use std::time::{Duration, Instant};
 
-use crate::input::token_groups;
+use crate::{input::token_groups, vec::transpose_vec};
 
 pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duration> {
-    let lines: Vec<Vec<String>> = token_groups(input, "\n", Some("   "));
+    let lines: Vec<Vec<i64>> = token_groups(input, "\n", Some("   "));
 
     let s = Instant::now();
 
-    let mut g1: Vec<i64> = lines.iter().map(|v| v[0].parse().unwrap()).collect();
-    let mut g2: Vec<i64> = lines.iter().map(|v| v[1].parse().unwrap()).collect();
+    let mut lists = transpose_vec(&lines);
+    let mut g1 = lists.swap_remove(0);
+    let mut g2 = lists.swap_remove(0);
 
     g1.sort_unstable();
     g2.sort_unstable();
