@@ -3,10 +3,10 @@
 # Advent of Code solutions 2024
 
 ```
-Day 01 took    61.2µs to compute (rsum    61.2µs) (with i/o:   176.2µs, rsum   176.2µs)
-
-         Total time for 1 days:    61.2µs (avg per day    61.2µs, med:    61.2µs, min:    61.2µs, max:    61.2µs)
-Total time with i/o for 1 days:   176.2µs (avg per day   176.2µs, med:   176.2µs, min:   176.2µs, max:   176.2µs)
+Day 01 took    32.1µs to compute (rsum    32.1µs) (with i/o:   134.0µs, rsum   134.0µs)
+Day 02 took    82.1µs to compute (rsum   114.2µs) (with i/o:   288.2µs, rsum   422.2µs)
+         Total time for 2 days:   114.2µs (avg per day    57.1µs, med:    57.1µs, min:    32.1µs, max:    82.1µs)
+Total time with i/o for 2 days:   422.2µs (avg per day   211.1µs, med:   211.1µs, min:   134.0µs, max:   288.2µs)
 ```
 
 # previous solutions
