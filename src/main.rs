@@ -38,7 +38,7 @@ fn main() {
 
     let solutions: Vec<&dyn Fn(&str, bool, bool) -> Result<Duration>> = vec![
         &aoc24::day01::solve,
-        // &aoc24::day02::solve,
+        &aoc24::day02::solve,
         // &aoc24::day03::solve,
         // &aoc24::day04::solve,
         // &aoc24::day05::solve,
