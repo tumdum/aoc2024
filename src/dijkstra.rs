@@ -69,20 +69,24 @@ where
 
     let mut prev: FxHashMap<T, T> = Default::default();
 
-    #[derive(Debug, PartialEq, Eq, Ord)]
+    #[derive(Debug, PartialEq, Eq)]
     struct State<U: Debug + PartialEq + Eq + PartialOrd + Ord, V: Debug + PartialOrd + Ord> {
         key: U,
         prio: V,
     }
-
-    impl<U: Debug + PartialOrd + Ord, V: Debug + PartialOrd + Ord> PartialOrd for State<U, V> {
-        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-            let o = self.prio.partial_cmp(&other.prio);
-            if o == Some(Ordering::Equal) {
-                self.key.partial_cmp(&other.key)
+    impl<U: Debug + PartialOrd + Ord, V: Debug + PartialOrd + Ord> Ord for State<U, V> {
+        fn cmp(&self, other: &Self) -> Ordering {
+            let o = self.prio.cmp(&other.prio);
+            if o == Ordering::Equal {
+                self.key.cmp(&other.key)
             } else {
                 o
             }
+        }
+    }
+    impl<U: Debug + PartialOrd + Ord, V: Debug + PartialOrd + Ord> PartialOrd for State<U, V> {
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+            Some(self.cmp(other))
         }
     }
     let mut todo: BinaryHeap<Reverse<State<T, P>>> = BinaryHeap::default();
