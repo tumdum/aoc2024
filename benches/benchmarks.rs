@@ -1,14 +1,18 @@
 use criterion::{criterion_group, criterion_main, Criterion};
+use std::path::PathBuf;
 
 macro_rules! benchmark {
     ($name: ident) => {
         fn $name(c: &mut Criterion) {
-            let input = std::fs::read_to_string(format!(
-                "{}/inputs/{}",
-                env!("CARGO_MANIFEST_DIR"),
-                stringify!($name)
-            ))
-            .unwrap();
+            let passphrase = std::env::var("PASSPHRASE").ok();
+            let (input, _) = aoc24::input::read_input(
+                &PathBuf::from(&format!(
+                    "{}/inputs/{}",
+                    env!("CARGO_MANIFEST_DIR"),
+                    stringify!($name)
+                )),
+                passphrase.as_deref(),
+            );
             c.bench_function(stringify!($name), |b| {
                 b.iter(|| aoc24::$name::solve(&input, false, false))
             });

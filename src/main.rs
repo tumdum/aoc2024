@@ -1,10 +1,8 @@
 use anyhow::Result;
+use aoc24::input::read_input;
 use clap::Parser;
-use memmap::MmapOptions;
-use std::fs::File;
 use std::path::PathBuf;
-use std::time::Duration;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 /// Solution for the Advent Of Code 2024
 #[derive(Parser, Debug)]
@@ -17,6 +15,10 @@ struct Opt {
     /// Solution to run
     #[arg(short, long)]
     day_to_run: Option<usize>,
+
+    /// Passphrase
+    #[arg(short, long, env)]
+    passphrase: Option<String>,
 
     /// Input file for selected solution
     #[arg(short, long)]
@@ -68,23 +70,19 @@ fn main() {
     let mut running_sum_io = Duration::from_secs(0);
     for (i, solution) in solutions.iter().enumerate() {
         if Some(i + 1) == opt.day_to_run || opt.day_to_run.is_none() {
-            let input_file = match &opt.input_file {
-                Some(path) => File::open(path).unwrap(),
-                None => {
-                    let path = format!("inputs/day{:02}", i + 1);
-                    File::open(&path).expect(&format!("Failed to open input: {path}"))
-                }
+            let input_file_path = match &opt.input_file {
+                Some(path) => path.to_owned(),
+                None => PathBuf::from(format!("inputs/day{:02}", i + 1)),
             };
 
             let mut solution_times = vec![];
 
             for i in 0..opt.loops {
-                let start = Instant::now();
-                let mapped_input = unsafe { MmapOptions::new().map(&input_file).unwrap() };
-                let input = std::str::from_utf8(&mapped_input).unwrap();
+                let (input, io_time) = read_input(&input_file_path, opt.passphrase.as_deref());
 
+                let start = Instant::now();
                 let t = match solution(
-                    input,
+                    &input,
                     !opt.skip_verification,
                     if i == 0 { !opt.skip_output } else { false },
                 ) {
@@ -95,7 +93,7 @@ fn main() {
                     }
                 };
 
-                solution_times.push((t, start.elapsed()));
+                solution_times.push((t, start.elapsed() + io_time));
                 if t > Duration::from_secs(1) {
                     break;
                 }
