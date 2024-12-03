@@ -1,10 +1,6 @@
 name: Rust
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 env:
   CARGO_TERM_COLOR: always
@@ -21,4 +17,6 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
     - name: Run
-      run: cargo run --release -- --skip-output --loops  10 2>/dev/null
+      run: cargo run --release -- --skip-output --loops 10 2>/dev/null
+      env:
+        PASSPHRASE: ${{ secrets.PASSPHRASE }}

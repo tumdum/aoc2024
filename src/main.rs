@@ -1,8 +1,13 @@
+use age::decrypt;
+use age::scrypt::Identity;
+use age::secrecy::SecretString;
 use anyhow::Result;
 use clap::Parser;
-use memmap::MmapOptions;
-use std::fs::File;
+use std::fs::read;
+use std::fs::read_to_string;
+use std::path::Path;
 use std::path::PathBuf;
+use std::str::from_utf8;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -17,6 +22,10 @@ struct Opt {
     /// Solution to run
     #[arg(short, long)]
     day_to_run: Option<usize>,
+
+    /// Passphrase
+    #[arg(short, long, env)]
+    passphrase: Option<String>,
 
     /// Input file for selected solution
     #[arg(short, long)]
@@ -68,23 +77,32 @@ fn main() {
     let mut running_sum_io = Duration::from_secs(0);
     for (i, solution) in solutions.iter().enumerate() {
         if Some(i + 1) == opt.day_to_run || opt.day_to_run.is_none() {
-            let input_file = match &opt.input_file {
-                Some(path) => File::open(path).unwrap(),
-                None => {
-                    let path = format!("inputs/day{:02}", i + 1);
-                    File::open(&path).expect(&format!("Failed to open input: {path}"))
-                }
+            let input_file_path = match &opt.input_file {
+                Some(path) => path.to_owned(),
+                None => PathBuf::from(format!("inputs/day{:02}", i + 1)),
+            };
+            let is_encrypted = input_file_path.with_extension("encrypted").exists();
+            let input_file_path = if is_encrypted {
+                input_file_path.with_extension("encrypted")
+            } else {
+                input_file_path
             };
 
             let mut solution_times = vec![];
 
             for i in 0..opt.loops {
-                let start = Instant::now();
-                let mapped_input = unsafe { MmapOptions::new().map(&input_file).unwrap() };
-                let input = std::str::from_utf8(&mapped_input).unwrap();
+                if is_encrypted && opt.passphrase.is_none() {
+                    panic!("Encrypted file ({input_file_path:?}) requires passphrase");
+                }
 
+                let (input, io_time) = read_input(
+                    &input_file_path,
+                    opt.passphrase.as_ref().map(|s| s.as_str()),
+                );
+
+                let start = Instant::now();
                 let t = match solution(
-                    input,
+                    &input,
                     !opt.skip_verification,
                     if i == 0 { !opt.skip_output } else { false },
                 ) {
@@ -95,7 +113,7 @@ fn main() {
                     }
                 };
 
-                solution_times.push((t, start.elapsed()));
+                solution_times.push((t, start.elapsed() + io_time));
                 if t > Duration::from_secs(1) {
                     break;
                 }
@@ -145,6 +163,25 @@ fn main() {
             d2s(*min_io.unwrap()),
             d2s(*max_io.unwrap()),
         );
+    }
+}
+
+fn read_input(path: &Path, passphrase: Option<&str>) -> (String, Duration) {
+    if let Some(passphrase) = passphrase {
+        let passphrase = SecretString::from(passphrase);
+        let identity = Identity::new(passphrase);
+        let io_start = Instant::now();
+        let encrypted = read(path).unwrap();
+        let read_time = io_start.elapsed();
+        let decrypted = decrypt(&identity, &encrypted).unwrap();
+        let parse_start = Instant::now();
+        let input = from_utf8(&decrypted).unwrap().to_owned();
+        let parse_time = parse_start.elapsed();
+        (input, read_time + parse_time)
+    } else {
+        let io_start = Instant::now();
+        let input = read_to_string(path).unwrap();
+        (input, io_start.elapsed())
     }
 }
 
