@@ -3,6 +3,17 @@ use std::{fmt::Display, ops::Deref, str::FromStr};
 use num::integer::Roots;
 use smallvec::{smallvec, SmallVec};
 
+pub fn get_at<T>(x: i64, y: i64, dx: i64, dy: i64, input: &[Vec<T>]) -> Option<&T> {
+    let (x, y) = (x + dx, y + dy);
+    if x < 0 || y < 0 {
+        return None;
+    }
+    if let Some(line) = input.get(y as usize) {
+        return line.get(x as usize);
+    }
+    None
+}
+
 pub fn transpose<T: Clone, const N: usize>(original: &[SmallVec<[T; N]>]) -> Vec<SmallVec<[T; N]>> {
     assert!(!original.is_empty());
     let mut transposed: Vec<SmallVec<[T; N]>> = vec![smallvec![]; original[0].len()];
