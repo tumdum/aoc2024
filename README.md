@@ -3,12 +3,14 @@
 # Advent of Code solutions 2024
 
 ```
-Day 01 took    41.0µs to compute (rsum    41.0µs) (with i/o:   181.6µs, rsum   181.6µs)
-Day 02 took   107.3µs to compute (rsum   148.3µs) (with i/o:   319.3µs, rsum   501.0µs)
-Day 03 took   609.3µs to compute (rsum   757.6µs) (with i/o:   652.7µs, rsum     1.2ms)
-Day 04 took   751.8µs to compute (rsum     1.5ms) (with i/o:   827.4µs, rsum     2.0ms)
-         Total time for 4 days:     1.5ms (avg per day   377.4µs, med:   358.3µs, min:    41.0µs, max:   751.8µs)
-Total time with i/o for 4 days:     2.0ms (avg per day   495.3µs, med:   486.0µs, min:   181.6µs, max:   827.4µs)
+Day 01 took    40.3µs to compute (rsum    40.3µs) (with i/o:   186.6µs, rsum   186.6µs)
+Day 02 took   109.5µs to compute (rsum   149.8µs) (with i/o:   363.2µs, rsum   549.8µs)
+Day 03 took   606.0µs to compute (rsum   755.8µs) (with i/o:   643.5µs, rsum     1.2ms)
+Day 04 took   607.5µs to compute (rsum     1.4ms) (with i/o:   672.9µs, rsum     1.9ms)
+Day 05 took     2.9ms to compute (rsum     4.3ms) (with i/o:     3.2ms, rsum     5.0ms)
+
+         Total time for 5 days:     4.3ms (avg per day   856.2µs, med:   606.0µs, min:    40.3µs, max:     2.9ms)
+Total time with i/o for 5 days:     5.0ms (avg per day     1.0ms, med:   643.5µs, min:   186.6µs, max:     3.2ms)
 ```
 
 # previous solutions
