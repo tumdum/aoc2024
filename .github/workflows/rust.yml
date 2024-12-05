@@ -21,3 +21,12 @@ jobs:
       run: cargo run --release -- --skip-output --loops 10 2>/dev/null
       env:
         PASSPHRASE: ${{ secrets.PASSPHRASE }}
+
+  run-benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run all benchmarks
+      run: cargo bench
+      env:
+        PASSPHRASE: ${{ secrets.PASSPHRASE }}
