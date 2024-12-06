@@ -3,14 +3,14 @@
 # Advent of Code solutions 2024
 
 ```
-Day 01 took    40.3µs to compute (rsum    40.3µs) (with i/o:   186.6µs, rsum   186.6µs)
-Day 02 took   109.5µs to compute (rsum   149.8µs) (with i/o:   363.2µs, rsum   549.8µs)
-Day 03 took   606.0µs to compute (rsum   755.8µs) (with i/o:   643.5µs, rsum     1.2ms)
-Day 04 took   607.5µs to compute (rsum     1.4ms) (with i/o:   672.9µs, rsum     1.9ms)
-Day 05 took     2.9ms to compute (rsum     4.3ms) (with i/o:     3.2ms, rsum     5.0ms)
-
-         Total time for 5 days:     4.3ms (avg per day   856.2µs, med:   606.0µs, min:    40.3µs, max:     2.9ms)
-Total time with i/o for 5 days:     5.0ms (avg per day     1.0ms, med:   643.5µs, min:   186.6µs, max:     3.2ms)
+Day 01 took    40.1µs to compute (rsum    40.1µs) (with i/o:   169.1µs, rsum   169.1µs)
+Day 02 took   110.3µs to compute (rsum   150.4µs) (with i/o:   322.7µs, rsum   491.8µs)
+Day 03 took   612.3µs to compute (rsum   762.6µs) (with i/o:   647.8µs, rsum     1.1ms)
+Day 04 took   604.4µs to compute (rsum     1.4ms) (with i/o:   668.7µs, rsum     1.8ms)
+Day 05 took     2.2ms to compute (rsum     3.5ms) (with i/o:     2.4ms, rsum     4.2ms)
+Day 06 took    89.8ms to compute (rsum    93.3ms) (with i/o:    89.9ms, rsum    94.1ms)
+         Total time for 6 days:    93.3ms (avg per day    15.6ms, med:   608.3µs, min:    40.1µs, max:    89.8ms)
+Total time with i/o for 6 days:    94.1ms (avg per day    15.7ms, med:   658.3µs, min:   169.1µs, max:    89.9ms)
 ```
 
 # previous solutions

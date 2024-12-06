@@ -68,6 +68,34 @@ where
     }
 }
 
+impl<T> Pos<T>
+where
+    T: Debug
+        + Clone
+        + Copy
+        + PartialEq
+        + Eq
+        + PartialOrd
+        + Ord
+        + Hash
+        + Sub
+        + num::Signed
+        + TryInto<i64>,
+    <T as TryInto<i64>>::Error: Debug,
+{
+    pub fn get(&self, map: &[crate::vec::StrVec]) -> Option<u8> {
+        let x: i64 = self.x.try_into().unwrap();
+        let y: i64 = self.y.try_into().unwrap();
+        if x < 0 || y < 0 {
+            return None;
+        }
+        if let Some(row) = map.get(y as usize) {
+            return row.get(x as usize).copied();
+        }
+        None
+    }
+}
+
 impl<T> Mul<T> for Pos<T>
 where
     T: Debug

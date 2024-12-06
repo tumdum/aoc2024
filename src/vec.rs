@@ -1,4 +1,8 @@
-use std::{fmt::Display, ops::Deref, str::FromStr};
+use std::{
+    fmt::Display,
+    ops::{Deref, DerefMut},
+    str::FromStr,
+};
 
 use num::integer::Roots;
 use smallvec::{smallvec, SmallVec};
@@ -67,6 +71,7 @@ pub fn diagonals(input: &[String]) -> Vec<String> {
     ret
 }
 
+#[derive(Clone)]
 pub struct StrVec(Vec<u8>);
 
 impl Deref for StrVec {
@@ -96,5 +101,10 @@ impl FromStr for StrVec {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self(s.bytes().collect()))
+    }
+}
+impl DerefMut for StrVec {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
