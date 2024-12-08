@@ -1,9 +1,10 @@
 use std::{
     fmt::Display,
     ops::{Deref, DerefMut},
-    str::FromStr,
+    str::{from_utf8, FromStr},
 };
 
+use itertools::Itertools;
 use num::integer::Roots;
 use smallvec::{smallvec, SmallVec};
 
@@ -107,4 +108,39 @@ impl DerefMut for StrVec {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
+}
+
+pub fn print_2d_map(m: &[StrVec]) {
+    let (h, w) = (m.len(), m[0].len());
+
+    const DIGITS: [u8; 10] = *b"0123456789";
+    const HEADER_PREFIX: &str = "    ";
+    let header = format!(
+        "{HEADER_PREFIX}{}",
+        from_utf8(&DIGITS.iter().cycle().take(w).copied().collect_vec()).unwrap()
+    );
+    let second_header = format!(
+        "{HEADER_PREFIX} {}",
+        DIGITS
+            .iter()
+            .cycle()
+            .skip(1)
+            .take((w - 1) / 10)
+            .copied()
+            .map(|c| format!("         {}", c as char))
+            .collect_vec()
+            .join("")
+    );
+
+    println!("{second_header}");
+    println!("{header}");
+    for y in 0..h {
+        print!("{y:3} ");
+        for x in 0..w {
+            print!("{}", m[y][x] as char);
+        }
+        println!()
+    }
+    println!("{header}");
+    println!("{second_header}");
 }
