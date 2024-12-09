@@ -3,17 +3,18 @@
 # Advent of Code solutions 2024
 
 ```
-Day 01 took    37.4µs to compute (rsum    37.4µs) (with i/o:   157.7µs, rsum   157.7µs)
-Day 02 took   100.1µs to compute (rsum   137.6µs) (with i/o:   297.9µs, rsum   455.6µs)
-Day 03 took   573.6µs to compute (rsum   711.2µs) (with i/o:   606.6µs, rsum     1.1ms)
-Day 04 took   546.6µs to compute (rsum     1.3ms) (with i/o:   633.6µs, rsum     1.7ms)
-Day 05 took     1.9ms to compute (rsum     3.2ms) (with i/o:     2.1ms, rsum     3.8ms)
-Day 06 took    41.6ms to compute (rsum    44.7ms) (with i/o:    41.6ms, rsum    45.5ms)
-Day 07 took    20.1ms to compute (rsum    64.8ms) (with i/o:    20.7ms, rsum    66.1ms)
-Day 08 took    13.0µs to compute (rsum    64.8ms) (with i/o:    92.6µs, rsum    66.2ms)
+Day 01 took    40.8µs to compute (rsum    40.8µs) (with i/o:   170.2µs, rsum   170.2µs)
+Day 02 took   109.2µs to compute (rsum   150.1µs) (with i/o:   314.2µs, rsum   484.4µs)
+Day 03 took   611.0µs to compute (rsum   761.0µs) (with i/o:   646.3µs, rsum     1.1ms)
+Day 04 took   600.7µs to compute (rsum     1.4ms) (with i/o:   668.6µs, rsum     1.8ms)
+Day 05 took     2.4ms to compute (rsum     3.8ms) (with i/o:     2.6ms, rsum     4.4ms)
+Day 06 took    34.5ms to compute (rsum    38.2ms) (with i/o:    34.5ms, rsum    39.0ms)
+Day 07 took    20.9ms to compute (rsum    59.1ms) (with i/o:    21.5ms, rsum    60.5ms)
+Day 08 took    14.1µs to compute (rsum    59.1ms) (with i/o:   105.5µs, rsum    60.6ms)
+Day 09 took    92.0ms to compute (rsum   151.1ms) (with i/o:    92.1ms, rsum   152.7ms)
 
-         Total time for 8 days:    64.8ms (avg per day     8.1ms, med:   560.1µs, min:    13.0µs, max:    41.6ms)
-Total time with i/o for 8 days:    66.2ms (avg per day     8.3ms, med:   620.1µs, min:    92.6µs, max:    41.6ms)
+         Total time for 9 days:   151.1ms (avg per day    16.8ms, med:   611.0µs, min:    14.1µs, max:    92.0ms)
+Total time with i/o for 9 days:   152.7ms (avg per day    17.0ms, med:   668.6µs, min:   105.5µs, max:    92.1ms)
 ```
 
 # previous solutions
