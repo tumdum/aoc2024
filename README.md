@@ -3,18 +3,19 @@
 # Advent of Code solutions 2024
 
 ```
-Day 01 took    40.8µs to compute (rsum    40.8µs) (with i/o:   170.2µs, rsum   170.2µs)
-Day 02 took   109.2µs to compute (rsum   150.1µs) (with i/o:   314.2µs, rsum   484.4µs)
-Day 03 took   611.0µs to compute (rsum   761.0µs) (with i/o:   646.3µs, rsum     1.1ms)
-Day 04 took   600.7µs to compute (rsum     1.4ms) (with i/o:   668.6µs, rsum     1.8ms)
-Day 05 took     2.4ms to compute (rsum     3.8ms) (with i/o:     2.6ms, rsum     4.4ms)
-Day 06 took    34.5ms to compute (rsum    38.2ms) (with i/o:    34.5ms, rsum    39.0ms)
-Day 07 took    20.9ms to compute (rsum    59.1ms) (with i/o:    21.5ms, rsum    60.5ms)
-Day 08 took    14.1µs to compute (rsum    59.1ms) (with i/o:   105.5µs, rsum    60.6ms)
-Day 09 took    92.0ms to compute (rsum   151.1ms) (with i/o:    92.1ms, rsum   152.7ms)
+Day 01 took    40.2µs to compute (rsum    40.2µs) (with i/o:   165.6µs, rsum   165.6µs)
+Day 02 took    66.1µs to compute (rsum   106.3µs) (with i/o:   226.5µs, rsum   392.1µs)
+Day 03 took   838.4µs to compute (rsum   944.7µs) (with i/o:   878.9µs, rsum     1.3ms)
+Day 04 took   395.3µs to compute (rsum     1.3ms) (with i/o:   460.0µs, rsum     1.7ms)
+Day 05 took   737.5µs to compute (rsum     2.1ms) (with i/o:   866.2µs, rsum     2.6ms)
+Day 06 took     6.8ms to compute (rsum     8.9ms) (with i/o:     6.9ms, rsum     9.5ms)
+Day 07 took     3.5ms to compute (rsum    12.4ms) (with i/o:     3.9ms, rsum    13.3ms)
+Day 08 took     7.3µs to compute (rsum    12.4ms) (with i/o:    73.4µs, rsum    13.4ms)
+Day 09 took    45.5ms to compute (rsum    57.9ms) (with i/o:    45.6ms, rsum    59.0ms)
+Day 10 took   233.6µs to compute (rsum    58.1ms) (with i/o:   283.2µs, rsum    59.2ms)
 
-         Total time for 9 days:   151.1ms (avg per day    16.8ms, med:   611.0µs, min:    14.1µs, max:    92.0ms)
-Total time with i/o for 9 days:   152.7ms (avg per day    17.0ms, med:   668.6µs, min:   105.5µs, max:    92.1ms)
+         Total time for 10 days:    58.1ms (avg per day     5.8ms, med:   566.4µs, min:     7.3µs, max:    45.5ms)
+Total time with i/o for 10 days:    59.2ms (avg per day     5.9ms, med:   663.1µs, min:    73.4µs, max:    45.6ms)
 ```
 
 # previous solutions
