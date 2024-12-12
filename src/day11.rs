@@ -14,7 +14,7 @@ fn split(v: u64) -> (u64, u64) {
 
 fn blink(input: &FxHashMap<u64, usize>) -> FxHashMap<u64, usize> {
     let mut ret: FxHashMap<u64, usize> =
-        FxHashMap::with_capacity_and_hasher(input.len() + 100, FxBuildHasher::default());
+        FxHashMap::with_capacity_and_hasher(input.len() + 100, FxBuildHasher);
 
     for (stone, count) in input {
         if *stone == 0 {

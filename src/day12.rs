@@ -105,7 +105,7 @@ fn border_counterparts(p: Pos, border: &FxHashSet<Pos>) -> impl Iterator<Item = 
     DELTAS
         .into_iter()
         .map(move |d| p + d)
-        .filter(|c| border.contains(&c))
+        .filter(|c| border.contains(c))
 }
 
 fn find_side(
@@ -149,10 +149,7 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
         })
         .collect();
 
-    let part1: usize = regions
-        .iter()
-        .map(|(r, b)| (r.len() * b.len()) as usize)
-        .sum();
+    let part1: usize = regions.iter().map(|(r, b)| r.len() * b.len()).sum();
 
     let part2: usize = regions
         .into_par_iter()

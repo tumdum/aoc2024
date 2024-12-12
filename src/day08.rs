@@ -35,7 +35,7 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
     let mut antinodes: FxHashSet<Pos> = Default::default();
     let mut antinodes2: FxHashSet<Pos> = Default::default();
 
-    for (_, positions) in &antenas {
+    for positions in antenas.values() {
         for i in 0..positions.len() {
             for j in (i + 1)..positions.len() {
                 let i = positions[i];

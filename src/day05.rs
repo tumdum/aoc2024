@@ -37,7 +37,7 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
                     return Ordering::Greater;
                 }
             }
-            a.cmp(&b)
+            a.cmp(b)
         }
     };
 

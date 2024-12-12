@@ -77,12 +77,7 @@ fn compress_files(space: &[(Option<usize>, i64)]) -> Vec<(Option<usize>, i64)> {
     }
 
     let mut result: Vec<(Option<usize>, i64)> = space.to_vec();
-    let mut max_id: usize = space
-        .iter()
-        .filter_map(|(id, _)| id.clone())
-        .last()
-        .unwrap()
-        + 1;
+    let mut max_id: usize = space.iter().filter_map(|(id, _)| *id).last().unwrap() + 1;
 
     let mut free_pos_v: Vec<usize> = space
         .iter()

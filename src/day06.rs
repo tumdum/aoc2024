@@ -45,13 +45,13 @@ fn run(
         path.push((pos, dir));
 
         let mut next = pos + dir;
-        if let Some(next_v) = next.get(&map) {
+        if let Some(next_v) = next.get(map) {
             if next_v == b'.' && Some(next) != additional {
                 pos = next;
             } else {
                 dir = rotate(dir);
                 next = pos + dir;
-                if let Some(next_v) = next.get(&map) {
+                if let Some(next_v) = next.get(map) {
                     if next_v == b'#' || Some(next) == additional {
                         dir = rotate(dir);
                         next = pos + dir;
