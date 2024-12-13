@@ -51,7 +51,7 @@ fn main() {
         &aoc24::day10::solve,
         &aoc24::day11::solve,
         &aoc24::day12::solve,
-        // &aoc24::day13::solve,
+        &aoc24::day13::solve,
         // &aoc24::day14::solve,
         // &aoc24::day15::solve,
         // &aoc24::day16::solve,
