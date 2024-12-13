@@ -77,9 +77,8 @@ fn main() {
 
             let mut solution_times = vec![];
 
+            let (input, io_time) = read_input(&input_file_path, opt.passphrase.as_deref());
             for i in 0..opt.loops {
-                let (input, io_time) = read_input(&input_file_path, opt.passphrase.as_deref());
-
                 let start = Instant::now();
                 let t = match solution(
                     &input,
