@@ -3,23 +3,23 @@
 # Advent of Code solutions 2024
 
 ```
-Day 01 took    13.4µs to compute (rsum    13.4µs) (with i/o:   373.0µs, rsum   373.0µs)
-Day 02 took    24.1µs to compute (rsum    37.5µs) (with i/o:   923.1µs, rsum     1.3ms)
-Day 03 took   215.3µs to compute (rsum   252.8µs) (with i/o:     1.2ms, rsum     2.5ms)
-Day 04 took   243.4µs to compute (rsum   496.2µs) (with i/o:   551.1µs, rsum     3.0ms)
-Day 05 took   424.0µs to compute (rsum   920.1µs) (with i/o:     1.3ms, rsum     4.4ms)
-Day 06 took     5.9ms to compute (rsum     6.8ms) (with i/o:     6.8ms, rsum    11.2ms)
-Day 07 took     2.6ms to compute (rsum     9.4ms) (with i/o:     3.8ms, rsum    15.0ms)
-Day 08 took     2.5µs to compute (rsum     9.4ms) (with i/o:   786.4µs, rsum    15.8ms)
-Day 09 took    45.7ms to compute (rsum    55.1ms) (with i/o:    46.7ms, rsum    62.4ms)
-Day 10 took   116.5µs to compute (rsum    55.2ms) (with i/o:   891.0µs, rsum    63.3ms)
-Day 11 took     1.2ms to compute (rsum    56.4ms) (with i/o:     2.1ms, rsum    65.4ms)
-Day 12 took     1.5ms to compute (rsum    57.9ms) (with i/o:     2.4ms, rsum    67.8ms)
-Day 13 took    67.1µs to compute (rsum    57.9ms) (with i/o:     1.0ms, rsum    68.8ms)
-Day 14 took     8.0ms to compute (rsum    65.9ms) (with i/o:     8.1ms, rsum    76.9ms)
+Day 01 took    13.1µs to compute (rsum    13.1µs) (with i/o:   387.1µs, rsum   387.1µs)
+Day 02 took    24.8µs to compute (rsum    38.0µs) (with i/o:     1.1ms, rsum     1.5ms)
+Day 03 took   218.7µs to compute (rsum   256.6µs) (with i/o:     1.0ms, rsum     2.5ms)
+Day 04 took   229.5µs to compute (rsum   486.1µs) (with i/o:     1.4ms, rsum     3.9ms)
+Day 05 took   419.1µs to compute (rsum   905.2µs) (with i/o:     1.4ms, rsum     5.4ms)
+Day 06 took     5.8ms to compute (rsum     6.7ms) (with i/o:     6.8ms, rsum    12.1ms)
+Day 07 took     2.5ms to compute (rsum     9.3ms) (with i/o:     3.8ms, rsum    15.9ms)
+Day 08 took     2.6µs to compute (rsum     9.3ms) (with i/o:   812.2µs, rsum    16.7ms)
+Day 09 took    17.6ms to compute (rsum    26.8ms) (with i/o:    17.6ms, rsum    34.3ms)
+Day 10 took   112.0µs to compute (rsum    26.9ms) (with i/o:     1.3ms, rsum    35.6ms)
+Day 11 took     1.2ms to compute (rsum    28.1ms) (with i/o:     2.0ms, rsum    37.6ms)
+Day 12 took     1.4ms to compute (rsum    29.5ms) (with i/o:     2.2ms, rsum    39.8ms)
+Day 13 took    72.2µs to compute (rsum    29.6ms) (with i/o:     1.1ms, rsum    40.9ms)
+Day 14 took     7.9ms to compute (rsum    37.5ms) (with i/o:     8.7ms, rsum    49.6ms)
 
-         Total time for 14 days:    65.9ms (avg per day     4.7ms, med:   333.7µs, min:     2.5µs, max:    45.7ms)
-Total time with i/o for 14 days:    76.9ms (avg per day     5.5ms, med:     1.3ms, min:   373.0µs, max:    46.7ms)
+         Total time for 14 days:    37.5ms (avg per day     2.7ms, med:   324.3µs, min:     2.6µs, max:    17.6ms)
+Total time with i/o for 14 days:    49.6ms (avg per day     3.5ms, med:     1.4ms, min:   387.1µs, max:    17.6ms)
 ```
 
 # previous solutions
