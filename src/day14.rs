@@ -1,6 +1,5 @@
 use anyhow::Result;
 use itertools::Itertools;
-use rustc_hash::FxHashSet;
 use std::{
     ops::Range,
     time::{Duration, Instant},
@@ -9,17 +8,6 @@ use std::{
 use crate::input::ints;
 
 type Pos = crate::pos::Pos<i16>;
-type Space = (i16, i16);
-
-fn step((w, h): Space, robots: &[(Pos, Pos)]) -> Vec<(Pos, Pos)> {
-    let step = |(p, v): &(Pos, Pos)| -> (Pos, Pos) {
-        let mut np = *p + *v;
-        np.x = np.x.rem_euclid(w);
-        np.y = np.y.rem_euclid(h);
-        (np, *v)
-    };
-    robots.iter().map(step).collect()
-}
 
 pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duration> {
     let mut robots = ints(input)
@@ -29,16 +17,22 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
 
     let s = Instant::now();
 
-    let space = (101, 103);
+    let (w, h) = (101i16, 103i16);
+    let mut buf: Vec<Vec<bool>> = vec![vec![false; w as usize]; h as usize];
 
     let mut part1 = 0;
     let mut part2 = 0;
     for s in 1.. {
-        robots = step(space, &robots);
-        if s == 100 {
-            part1 = count(space.0, space.1, &robots);
+        for (p, v) in &mut robots {
+            p.x = (p.x + v.x).rem_euclid(w);
+            p.y = (p.y + v.y).rem_euclid(h);
         }
-        if is_tree(&robots) {
+
+        if s == 100 {
+            part1 = count(w, h, &robots);
+        }
+
+        if is_tree(&robots, &mut buf) {
             part2 = s;
             break;
         }
@@ -57,21 +51,25 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
     Ok(e)
 }
 
-fn is_tree(robots: &[(Pos, Pos)]) -> bool {
-    let pos: FxHashSet<Pos> = robots.iter().map(|(p, _)| *p).collect();
+fn is_tree(robots: &[(Pos, Pos)], occupied: &mut [Vec<bool>]) -> bool {
+    let w = occupied[0].len() as i16;
+    for row in &mut *occupied {
+        row.fill(false);
+    }
+    for (p, _) in robots {
+        occupied[p.y as usize][p.x as usize] = true;
+    }
 
-    const D: Pos = Pos::new(1, 0);
-
-    pos.iter()
-        .any(|p| (0..31).all(|d| pos.contains(&(*p + D * d))))
+    robots.iter().any(|(p, _)| {
+        if w - p.x < 31 {
+            return false;
+        }
+        (0..31).all(|d| occupied[p.y as usize][(p.x + d) as usize])
+    })
 }
 
 fn count(w: i16, h: i16, robots: &[(Pos, Pos)]) -> usize {
     assert!(w % 2 == 1 && h % 2 == 1);
-    let up_left = (0..w / 2, 0..h / 2);
-    let up_right = (w / 2 + 1..w, 0..h / 2);
-    let down_left = (0..w / 2, h / 2 + 1..h);
-    let down_right = (w / 2 + 1..w, h / 2 + 1..h);
     fn aux((xs, ys): (Range<i16>, Range<i16>), robots: &[(Pos, Pos)]) -> usize {
         robots
             .iter()
@@ -80,5 +78,8 @@ fn count(w: i16, h: i16, robots: &[(Pos, Pos)]) -> usize {
             .count()
     }
 
-    aux(up_left, robots) * aux(up_right, robots) * aux(down_left, robots) * aux(down_right, robots)
+    aux((0..w / 2, 0..h / 2), robots)
+        * aux((w / 2 + 1..w, 0..h / 2), robots)
+        * aux((0..w / 2, h / 2 + 1..h), robots)
+        * aux((w / 2 + 1..w, h / 2 + 1..h), robots)
 }
