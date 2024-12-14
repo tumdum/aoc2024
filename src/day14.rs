@@ -17,19 +17,21 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
 
     let s = Instant::now();
 
-    let (w, h) = (101i16, 103i16);
-    let mut buf: Vec<Vec<bool>> = vec![vec![false; w as usize]; h as usize];
+    const W: i16 = 101i16;
+    const H: i16 = 103i16;
+
+    let mut buf: [u128; H as usize] = [0; H as usize];
 
     let mut part1 = 0;
     let mut part2 = 0;
     for s in 1.. {
         for (p, v) in &mut robots {
-            p.x = (p.x + v.x).rem_euclid(w);
-            p.y = (p.y + v.y).rem_euclid(h);
+            p.x = (p.x + v.x).rem_euclid(W);
+            p.y = (p.y + v.y).rem_euclid(H);
         }
 
         if s == 100 {
-            part1 = count(w, h, &robots);
+            part1 = count(W, H, &robots);
         }
 
         if is_tree(&robots, &mut buf) {
@@ -51,20 +53,16 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
     Ok(e)
 }
 
-fn is_tree(robots: &[(Pos, Pos)], occupied: &mut [Vec<bool>]) -> bool {
-    let w = occupied[0].len() as i16;
-    for row in &mut *occupied {
-        row.fill(false);
-    }
+fn is_tree<const N: usize>(robots: &[(Pos, Pos)], occupied: &mut [u128; N]) -> bool {
+    occupied.fill(0);
+
     for (p, _) in robots {
-        occupied[p.y as usize][p.x as usize] = true;
+        occupied[p.y as usize] |= 1 << (p.x as u128);
     }
 
     robots.iter().any(|(p, _)| {
-        if w - p.x < 31 {
-            return false;
-        }
-        (0..31).all(|d| occupied[p.y as usize][(p.x + d) as usize])
+        let mask = ((1u128 << 31) - 1) << (p.x as u128);
+        (occupied[p.y as usize] & mask) == mask
     })
 }
 
