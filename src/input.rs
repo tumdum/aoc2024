@@ -5,6 +5,25 @@ use std::str::{from_utf8, FromStr};
 use std::time::{Duration, Instant};
 
 use age::{decrypt, scrypt::Identity, secrecy::SecretString};
+use itertools::Itertools;
+
+pub fn ints<T: FromStr>(input: &str) -> Vec<T>
+where
+    <T as FromStr>::Err: Debug,
+{
+    elements(input, |c: char| !c.is_ascii_digit() && c != '-')
+}
+
+pub fn elements<T: FromStr>(input: &str, not_pred: impl Fn(char) -> bool) -> Vec<T>
+where
+    <T as FromStr>::Err: Debug,
+{
+    input
+        .split(not_pred)
+        .filter(|s| !s.is_empty())
+        .map(|s| s.parse().unwrap())
+        .collect_vec()
+}
 
 pub fn tokens<T>(input: &str, sep: Option<&str>) -> Vec<T>
 where
