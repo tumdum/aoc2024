@@ -31,6 +31,12 @@ struct Opt {
     /// How many times each solution will be run, usefull for better time measurements
     #[arg(long, default_value_t = 1)]
     loops: usize,
+
+    #[arg(long, default_value_t = 2)]
+    max_bench_time_s: u64,
+
+    #[arg(long, default_value_t = 1)]
+    min_bench_time_s: u64,
 }
 
 fn main() {
@@ -78,7 +84,11 @@ fn main() {
             let mut solution_times = vec![];
 
             let (input, io_time) = read_input(&input_file_path, opt.passphrase.as_deref());
-            for i in 0..opt.loops {
+            let bench_time = Instant::now();
+
+            let mut runs = 0;
+            for i in 0.. {
+                runs += 1;
                 let start = Instant::now();
                 let t = match solution(
                     &input,
@@ -93,7 +103,11 @@ fn main() {
                 };
 
                 solution_times.push((t, start.elapsed() + io_time));
-                if t > Duration::from_secs(1) {
+                if bench_time.elapsed() < Duration::from_secs(opt.min_bench_time_s) {
+                    continue;
+                }
+
+                if i >= opt.loops || t > Duration::from_secs(opt.max_bench_time_s) {
                     break;
                 }
             }
@@ -101,7 +115,7 @@ fn main() {
             running_sum_compute += t;
             running_sum_io += solution_with_io;
             println!(
-                "Day {:02} took {:>9} to compute (rsum {:>9}) (with i/o: {:>9}, rsum {:>9})",
+                "Day {:02} took {:>9} to compute (runs{runs:>6}) (runnig sum {:>9}) (with i/o: {:>9}, rsum {:>9})",
                 i + 1,
                 d2s(t),
                 d2s(running_sum_compute),
