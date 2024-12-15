@@ -1,8 +1,9 @@
 use anyhow::Result;
-use rustc_hash::FxHashSet;
+use rustc_hash::FxHashMap;
+
 use std::{
+    cmp::Reverse,
     collections::VecDeque,
-    thread::scope,
     time::{Duration, Instant},
 };
 
@@ -13,22 +14,6 @@ struct File {
     id: usize,
     start: usize,
     size: i64,
-}
-
-fn print(prefix: &str, space: &[(Option<usize>, i64)]) {
-    println!("{prefix} {space:?}");
-    print!("{prefix}");
-    for (id, size) in space {
-        let name = if let Some(id) = id {
-            id.to_string()
-        } else {
-            ".".to_owned()
-        };
-        for _ in 0..*size {
-            print!("{name}");
-        }
-    }
-    println!();
 }
 
 fn compress_blocks(space: &[(Option<usize>, i64)]) -> Vec<(Option<usize>, i64)> {
@@ -79,91 +64,121 @@ fn compress_blocks(space: &[(Option<usize>, i64)]) -> Vec<(Option<usize>, i64)> 
     ret
 }
 
-fn merge_free(space: &mut Vec<(Option<usize>, i64)>, file_pos: usize) -> Vec<usize> {
-    loop {
-        let mut changed = false;
-        for i in (file_pos - 1)..(file_pos + 3).min(space.len()) {
-            if space[i].0.is_none() && space[i - 1].0.is_none() {
-                changed = true;
-                space[i - 1].1 += space[i].1;
-                space.remove(i);
-                break;
+fn compress_files(space: &[(Option<usize>, i64)]) -> usize {
+    let add = |l: &mut Vec<(i64, Vec<Reverse<usize>>)>, size: i64, offset: usize| {
+        debug_assert!(l.is_sorted_by_key(|(size, _)| *size));
+        match l.binary_search_by_key(&size, |(s, _)| *s) {
+            Ok(idx) => {
+                let insert_idx = match l[idx].1.binary_search(&Reverse(offset)) {
+                    Ok(i) => i,
+                    Err(i) => i,
+                };
+                l[idx].1.insert(insert_idx, Reverse(offset));
+            }
+            Err(idx) => {
+                l.insert(idx, (size, vec![Reverse(offset)]));
             }
         }
-        if !changed {
-            break;
-        }
-    }
-    let mut ret = Vec::with_capacity(space.len());
-    for (id, _) in space
-        .iter()
-        .enumerate()
-        .filter(|(_, (file_id, _))| file_id.is_none())
-    {
-        ret.push(id);
-    }
-    ret
-}
-
-fn compress_files(space: &[(Option<usize>, i64)]) -> Vec<(Option<usize>, i64)> {
-    fn find_next_free(
-        free: &[usize],
-        space: &[(Option<usize>, i64)],
-        min_size: i64,
-    ) -> Option<(usize, usize)> {
-        free.iter()
-            .enumerate()
-            .find(|(in_free, in_space)| space[**in_space].1 >= min_size)
-            .map(|(in_free, in_space)| (in_free, *in_space))
-    }
-
-    let mut result: Vec<(Option<usize>, i64)> = space.to_vec();
-    let mut max_id: usize = space.iter().filter_map(|(id, _)| *id).last().unwrap() + 1;
-
-    let mut free_pos_v: Vec<usize> = space
-        .iter()
-        .enumerate()
-        .filter(|(_, (file_id, _))| file_id.is_none())
-        .map(|(id, _)| id)
-        .collect();
-
-    loop {
-        let file_to_compress = result.iter().rposition(|(id, _)| {
-            if let Some(id) = id {
-                *id < max_id
-            } else {
-                false
+        debug_assert!(l.is_sorted_by_key(|(size, _)| *size));
+    };
+    let remove_first = |l: &mut Vec<(i64, Vec<Reverse<usize>>)>,
+                        size: i64,
+                        file_start: usize|
+     -> Option<(i64, usize)> {
+        debug_assert!(l.is_sorted_by_key(|(size, _)| *size));
+        let start_idx = match l.binary_search_by_key(&size, |(s, _)| *s) {
+            Ok(idx) => idx,
+            Err(idx) => idx,
+        };
+        let mut earliest: Option<(usize, i64, usize)> = None;
+        for idx in start_idx..l.len() {
+            if l[idx].1.is_empty() {
+                continue;
             }
-        });
-        if let Some(file_pos) = file_to_compress {
-            let (file_id, file_size) = (result[file_pos].0.unwrap(), result[file_pos].1);
 
-            if let Some((in_free, in_space)) = find_next_free(&free_pos_v, &result, file_size) {
-                if in_space > file_pos {
-                    max_id = file_id;
-                    continue;
-                }
-                let free_size = result[in_space].1;
+            debug_assert!(l[idx].0 >= size);
+            debug_assert!(l[idx].1.is_sorted());
+            let last = l[idx].1.len() - 1;
+            let ret = l[idx].1[last];
+            if ret.0 > file_start {
+                continue;
+            }
 
-                if free_size >= file_size {
-                    result[in_space] = result[file_pos];
-                    result[file_pos].0 = None;
-                    if free_size > file_size {
-                        result.insert(in_space + 1, (None, free_size - file_size));
-                        free_pos_v = merge_free(&mut result, file_pos);
-                    } else {
-                        free_pos_v.remove(in_free);
-                    }
+            if let Some(e) = earliest {
+                if e.2 > ret.0 {
+                    earliest = Some((idx, l[idx].0, ret.0))
                 }
             } else {
-                max_id = file_id;
+                earliest = Some((idx, l[idx].0, ret.0))
+            }
+        }
+
+        if let Some((idx, size, offset)) = earliest {
+            let last = l[idx].1.len() - 1;
+            l[idx].1.remove(last);
+            Some((size, offset))
+        } else {
+            None
+        }
+    };
+    let mut free_list: Vec<(i64, Vec<Reverse<usize>>)> = vec![];
+    let mut orig_files: FxHashMap<usize, (usize, i64)> = Default::default();
+    let mut files: Vec<File> = vec![];
+    let mut files_todo: VecDeque<File> = VecDeque::default();
+
+    let mut offset = 0;
+    for entry in space {
+        if entry.0.is_none() {
+            add(&mut free_list, entry.1, offset);
+        } else {
+            orig_files.insert(entry.0.unwrap(), (offset, entry.1));
+            files_todo.push_back(File {
+                id: entry.0.unwrap(),
+                start: offset,
+                size: entry.1,
+            });
+        }
+        offset += entry.1 as usize;
+    }
+
+    while let Some(file) = files_todo.pop_back() {
+        if let Some((free_size, free_offset)) = remove_first(&mut free_list, file.size, file.start)
+        {
+            debug_assert!(free_size >= file.size);
+
+            files.push(File {
+                id: file.id,
+                start: free_offset,
+                size: file.size,
+            });
+            if free_size > file.size {
+                let new_free_size = free_size - file.size;
+                let new_free_offset = free_offset + file.size as usize;
+                add(&mut free_list, new_free_size, new_free_offset);
             }
         } else {
-            break;
+            let (offset, size) = orig_files.get(&file.id).unwrap();
+            files.push(File {
+                id: file.id,
+                start: *offset,
+                size: *size,
+            });
         }
     }
 
-    result
+    files.sort_unstable_by_key(|file| file.start);
+
+    let mut cksum = 0;
+
+    for file in files {
+        let mut curr = file.start;
+        for _ in 0..file.size {
+            cksum += curr * file.id;
+            curr += 1;
+        }
+    }
+
+    cksum
 }
 
 fn checksum(space: &[(Option<usize>, i64)]) -> usize {
@@ -202,13 +217,8 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
         free = !free;
     }
 
-    let (part1, part2) = scope(move |s| {
-        let space1 = space.clone();
-        let part1t = s.spawn(move || checksum(&compress_blocks(&space1)));
-        let part2t = s.spawn(move || checksum(&compress_files(&space)));
-
-        (part1t.join().unwrap(), part2t.join().unwrap())
-    });
+    let part1 = checksum(&compress_blocks(&space));
+    let part2 = compress_files(&space);
 
     let e = s.elapsed();
 
