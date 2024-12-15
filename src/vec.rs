@@ -75,6 +75,26 @@ pub fn diagonals(input: &[String]) -> Vec<String> {
 #[derive(Clone)]
 pub struct StrVec(Vec<u8>);
 
+impl StrVec {
+    pub fn new(v: Vec<u8>) -> Self {
+        Self(v)
+    }
+
+    pub fn push(&mut self, v: u8) {
+        self.0.push(v);
+    }
+}
+
+impl<'a> IntoIterator for &'a StrVec {
+    type Item = &'a u8;
+
+    type IntoIter = std::slice::Iter<'a, u8>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
+    }
+}
+
 impl Deref for StrVec {
     type Target = [u8];
 

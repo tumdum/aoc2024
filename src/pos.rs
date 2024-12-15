@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 use std::hash::Hash;
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, AddAssign, Mul, Sub};
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(crate) struct Pos<T: Debug + Clone + Copy + PartialEq + Eq + PartialOrd + Ord + Hash> {
@@ -94,6 +94,17 @@ where
         }
         None
     }
+    pub fn get_mut<'a>(&self, map: &'a mut [crate::vec::StrVec]) -> Option<&'a mut u8> {
+        let x: i64 = self.x.try_into().unwrap();
+        let y: i64 = self.y.try_into().unwrap();
+        if x < 0 || y < 0 {
+            return None;
+        }
+        if let Some(row) = map.get_mut(y as usize) {
+            return row.get_mut(x as usize);
+        }
+        None
+    }
 }
 
 impl<T> Mul<T> for Pos<T>
@@ -118,6 +129,28 @@ where
             x: self.x * rhs,
             y: self.y * rhs,
         }
+    }
+}
+
+impl<T> AddAssign<Pos<T>> for Pos<T>
+where
+    T: Debug
+        + Clone
+        + Copy
+        + PartialEq
+        + Eq
+        + PartialOrd
+        + Ord
+        + Hash
+        + Sub
+        + num::Signed
+        + AddAssign
+        + TryInto<usize>,
+    <T as TryInto<usize>>::Error: Debug,
+{
+    fn add_assign(&mut self, rhs: Pos<T>) {
+        self.x += rhs.x;
+        self.y += rhs.y;
     }
 }
 
