@@ -3,24 +3,25 @@
 # Advent of Code solutions 2024
 
 ```
-Day 01 took    12.7µs to compute (runs 16335) (runnig sum    12.7µs) (with i/o:     1.3ms, rsum     1.3ms)
-Day 02 took    23.5µs to compute (runs  8322) (runnig sum    36.2µs) (with i/o:   943.7µs, rsum     2.2ms)
-Day 03 took   212.2µs to compute (runs  4270) (runnig sum   248.3µs) (with i/o:     1.0ms, rsum     3.3ms)
-Day 04 took   234.8µs to compute (runs  3694) (runnig sum   483.1µs) (with i/o:     1.0ms, rsum     4.3ms)
-Day 05 took   358.5µs to compute (runs  1859) (runnig sum   841.6µs) (with i/o:     1.4ms, rsum     5.7ms)
-Day 06 took     5.8ms to compute (runs   166) (runnig sum     6.7ms) (with i/o:     6.7ms, rsum    12.4ms)
-Day 07 took     2.5ms to compute (runs   327) (runnig sum     9.2ms) (with i/o:     3.6ms, rsum    16.0ms)
-Day 08 took     2.5µs to compute (runs 48562) (runnig sum     9.2ms) (with i/o:   799.5µs, rsum    16.8ms)
-Day 09 took   998.5µs to compute (runs   918) (runnig sum    10.2ms) (with i/o:     1.1ms, rsum    17.8ms)
-Day 10 took    64.9µs to compute (runs  9968) (runnig sum    10.2ms) (with i/o:   852.0µs, rsum    18.7ms)
-Day 11 took     1.1ms to compute (runs   853) (runnig sum    11.3ms) (with i/o:     2.2ms, rsum    20.9ms)
-Day 12 took     1.2ms to compute (runs   724) (runnig sum    12.5ms) (with i/o:     2.1ms, rsum    23.0ms)
-Day 13 took    67.0µs to compute (runs  5762) (runnig sum    12.6ms) (with i/o:   955.9µs, rsum    23.9ms)
-Day 14 took     7.9ms to compute (runs   121) (runnig sum    20.5ms) (with i/o:     9.0ms, rsum    32.9ms)
-Day 15 took   625.3µs to compute (runs  1425) (runnig sum    21.1ms) (with i/o:     1.9ms, rsum    34.9ms)
+Day 01 took    12.6µs to compute (runs 16378) (runnig sum    12.6µs) (with i/o:   419.6µs, rsum   419.6µs)
+Day 02 took    23.8µs to compute (runs  8118) (runnig sum    36.4µs) (with i/o:   930.8µs, rsum     1.4ms)
+Day 03 took   214.7µs to compute (runs  4202) (runnig sum   251.1µs) (with i/o:     1.1ms, rsum     2.5ms)
+Day 04 took   222.9µs to compute (runs  3729) (runnig sum   474.0µs) (with i/o:     1.1ms, rsum     3.6ms)
+Day 05 took   344.2µs to compute (runs  1884) (runnig sum   818.1µs) (with i/o:     1.3ms, rsum     4.9ms)
+Day 06 took     6.1ms to compute (runs   158) (runnig sum     6.9ms) (with i/o:     6.4ms, rsum    11.4ms)
+Day 07 took     2.4ms to compute (runs   337) (runnig sum     9.3ms) (with i/o:     3.0ms, rsum    14.3ms)
+Day 08 took     2.5µs to compute (runs 47479) (runnig sum     9.3ms) (with i/o:   753.3µs, rsum    15.1ms)
+Day 09 took     1.0ms to compute (runs   899) (runnig sum    10.4ms) (with i/o:     1.9ms, rsum    17.0ms)
+Day 10 took    64.0µs to compute (runs 10249) (runnig sum    10.4ms) (with i/o:     1.2ms, rsum    18.2ms)
+Day 11 took     1.1ms to compute (runs   840) (runnig sum    11.6ms) (with i/o:     2.2ms, rsum    20.4ms)
+Day 12 took     1.2ms to compute (runs   720) (runnig sum    12.8ms) (with i/o:     2.1ms, rsum    22.5ms)
+Day 13 took    65.2µs to compute (runs  5871) (runnig sum    12.9ms) (with i/o:   976.8µs, rsum    23.5ms)
+Day 14 took     7.9ms to compute (runs   121) (runnig sum    20.8ms) (with i/o:     8.6ms, rsum    32.1ms)
+Day 15 took   637.3µs to compute (runs  1404) (runnig sum    21.4ms) (with i/o:     1.8ms, rsum    33.9ms)
+Day 16 took    10.2ms to compute (runs    92) (runnig sum    31.6ms) (with i/o:    10.7ms, rsum    44.6ms)
 
-         Total time for 15 days:    21.1ms (avg per day     1.4ms, med:   358.5µs, min:     2.5µs, max:     7.9ms)
-Total time with i/o for 15 days:    34.9ms (avg per day     2.3ms, med:     1.3ms, min:   799.5µs, max:     9.0ms)
+         Total time for 16 days:    31.6ms (avg per day     2.0ms, med:   490.8µs, min:     2.5µs, max:    10.2ms)
+Total time with i/o for 16 days:    44.6ms (avg per day     2.8ms, med:     1.5ms, min:   419.6µs, max:    10.7ms)
 ```
 
 # previous solutions
