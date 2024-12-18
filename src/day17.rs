@@ -90,16 +90,20 @@ impl Machine {
         self.reg[2]
     }
 }
-fn decoded_version(mut a: i64, output: &mut Vec<u8>) {
-    fn step(a: i64, output: &mut Vec<u8>) -> i64 {
+
+fn decoded_version(mut a: i64, output: &mut Vec<u8>, expected: Option<&[u8]>) {
+    for i in 0.. {
         let mut b = (a ^ 1) % 8;
         b = (b ^ 5) ^ (a / (1 << b));
-        output.push((b % 8) as u8);
-        a >> 3
-    }
+        let out = (b % 8) as u8;
+        if let Some(expected) = expected {
+            if i >= expected.len() || expected[i] != out {
+                break;
+            }
+        }
+        output.push(out);
+        a = a >> 3;
 
-    loop {
-        a = step(a, output);
         if a == 0 {
             break;
         }
@@ -111,7 +115,7 @@ fn check_prefix(prefix: i64, size: usize, expected: &[u8]) -> bool {
     for i in 0..8 {
         output.clear();
         let a = i << size | prefix;
-        decoded_version(a, &mut output);
+        decoded_version(a, &mut output, Some(&expected));
         if !output.starts_with(expected) {
             return false;
         }
@@ -129,8 +133,7 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
     let mut machine = Machine::new(num[0], num[1], num[2]);
     let result = machine.run(&prog, false);
     let part1 = result.iter().join(",");
-    let part2 = 164278899142333;
-    debug_assert_eq!(part2, find_solution_for_part2(&prog));
+    let part2 = find_solution_for_part2(&prog);
 
     let e = s.elapsed();
 
@@ -156,7 +159,7 @@ fn find_solution_for_part2(prog: &[u8]) -> i64 {
     forms a 21 bit prefix of the solution.
     */
     let mut result = vec![];
-    decoded_version(38610541, &mut result);
+    decoded_version(38610541, &mut result, None);
     assert_eq!(vec![7u8, 5, 4, 3, 4, 5, 3, 4, 6], result);
 
     let max: i64 = 0b111_111_111_111_111_111_111_111_111_111_111;
@@ -189,9 +192,9 @@ fn find_solution_for_part2(prog: &[u8]) -> i64 {
     for v in 0.. {
         result.clear();
         let p = v << 21 | prefix;
-        decoded_version(p, &mut result);
+        decoded_version(p, &mut result, Some(prog));
         if result == prog {
-            return dbg!(p);
+            return p;
         }
     }
     unreachable!()
