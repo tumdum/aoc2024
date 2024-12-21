@@ -131,6 +131,7 @@ dependencies = [
  "maplit",
  "memmap",
  "num",
+ "once_cell",
  "proptest",
  "proptest-derive",
  "rayon",

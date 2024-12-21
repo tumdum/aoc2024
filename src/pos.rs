@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 use std::hash::Hash;
-use std::ops::{Add, AddAssign, Mul, Sub};
+use std::ops::{Add, AddAssign, Deref, Mul, Sub};
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(crate) struct Pos<T: Debug + Clone + Copy + PartialEq + Eq + PartialOrd + Ord + Hash> {
@@ -83,14 +83,14 @@ where
         + TryInto<i64>,
     <T as TryInto<i64>>::Error: Debug,
 {
-    pub fn get(&self, map: &[crate::vec::StrVec]) -> Option<u8> {
+    pub fn get<V: Deref<Target = [X]>, X: Clone>(&self, map: &[V]) -> Option<X> {
         let x: i64 = self.x.try_into().unwrap();
         let y: i64 = self.y.try_into().unwrap();
         if x < 0 || y < 0 {
             return None;
         }
         if let Some(row) = map.get(y as usize) {
-            return row.get(x as usize).copied();
+            return row.get(x as usize).cloned();
         }
         None
     }
@@ -104,6 +104,15 @@ where
             return row.get_mut(x as usize);
         }
         None
+    }
+}
+
+impl<T> Into<(T, T)> for Pos<T>
+where
+    T: Debug + Clone + Copy + PartialEq + Eq + PartialOrd + Ord + Hash,
+{
+    fn into(self) -> (T, T) {
+        (self.x, self.y)
     }
 }
 
