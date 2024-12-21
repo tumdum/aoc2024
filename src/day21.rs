@@ -190,19 +190,25 @@ fn generate_all<T: Clone + Debug>(actions_per_step: &[Vec<Vec<T>>]) -> Vec<Vec<T
 }
 
 fn solve_for_code(
-    line: &str,
+    codes: &str,
+    start_code: char,
     mid_layers: usize,
     num_panel: &[Vec<Option<char>>],
     dir_panel: &[Vec<Option<Dir>>],
 ) -> u64 {
-    println!("Solving '{line}' for {mid_layers} middle layers");
+    println!("Solving '{codes}' for {mid_layers} middle layers");
     let mut num_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
     let mut dir_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
 
+    let start_pos = iproduct!(0..=2, 0..=3)
+        .find(|(x, y)| num_panel[*y][*x] == Some(start_code))
+        .map(|(x, y)| Pos::new(x as i32, y as i32))
+        .unwrap();
+
     let mut possible_actions: Vec<Vec<Dir>> = press(
-        &line.chars().collect_vec(),
-        Pos::new(2, 3),
-        'A',
+        &codes.chars().collect_vec(),
+        start_pos,
+        start_code,
         &num_panel,
         &mut num_cache,
     );
@@ -274,7 +280,7 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
             .take_while(|c| c.is_ascii_digit())
             .collect();
         let code_value: u64 = code_value.parse().unwrap();
-        let shortest_steps = solve_for_code(&line, 2, &num_panel, &dir_panel);
+        let shortest_steps = solve_for_code(&line, 'A', 2, &num_panel, &dir_panel);
 
         part1 += dbg!(dbg!(shortest_steps) * code_value);
     }
@@ -414,11 +420,67 @@ pub fn paths<T: PartialEq + Eq + Hash + Clone + Ord>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     #[test]
     fn test_generate_all() {
         let input: Vec<Vec<Vec<i32>>> = vec![vec![vec![1], vec![2]], vec![vec![3], vec![4]]];
         let out: Vec<Vec<i32>> = generate_all(&input);
         assert_eq!(out, vec![vec![1, 3], vec![1, 4], vec![2, 3], vec![2, 4]]);
+    }
+
+    #[test]
+    fn foo() {
+        let num_panel: Vec<Vec<Option<char>>> = tokens::<String>(NUM_PANEL, None)
+            .into_iter()
+            .map(|s| {
+                s.chars()
+                    .map(|c| {
+                        if "9876543210A".contains(c) {
+                            Some(c)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect_vec()
+            })
+            .collect_vec();
+        let dir_panel: Vec<Vec<Option<Dir>>> = tokens::<String>(DIR_PANEL, None)
+            .into_iter()
+            .map(|s| s.chars().map(|c| Dir::try_from(c).ok()).collect_vec())
+            .collect();
+
+        dbg!(solve_for_code("0", '9', 3, &num_panel, &dir_panel));
+        dbg!(solve_for_code("0", '9', 2, &num_panel, &dir_panel));
+        dbg!(solve_for_code("0", '9', 1, &num_panel, &dir_panel));
+        dbg!(solve_for_code("0", '9', 0, &num_panel, &dir_panel));
+    }
+
+    proptest! {
+        #[test]
+        fn doesnt_crash(codes in "[0123456789A]", start in "[0123456789A]", levels in 0usize..4) {
+            let num_panel: Vec<Vec<Option<char>>> = tokens::<String>(NUM_PANEL, None)
+                .into_iter()
+                .map(|s| {
+                    s.chars()
+                        .map(|c| {
+                            if "9876543210A".contains(c) {
+                                Some(c)
+                            } else {
+                                None
+                            }
+                        })
+                        .collect_vec()
+                })
+                .collect_vec();
+            let dir_panel: Vec<Vec<Option<Dir>>> = tokens::<String>(DIR_PANEL, None)
+                .into_iter()
+                .map(|s| s.chars().map(|c| Dir::try_from(c).ok()).collect_vec())
+                .collect();
+
+
+            println!("codes: '{codes}' starting from {start}");
+            dbg!(solve_for_code(&codes, start.chars().next().unwrap(), levels, &num_panel, &dir_panel));
+        }
     }
 }
