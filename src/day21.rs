@@ -107,6 +107,7 @@ fn press<T: Clone + Hash + Debug + PartialEq>(
     mut start: Pos,
     start_val: T,
     map: &[Vec<Option<T>>],
+    cache: &mut FxHashMap<(Pos, Pos), Vec<Vec<Dir>>>,
 ) -> Vec<Vec<Dir>> {
     assert_eq!(Some(start_val), map[start.y as usize][start.x as usize]);
     let seq_pos = seq
@@ -117,7 +118,17 @@ fn press<T: Clone + Hash + Debug + PartialEq>(
     let mut all_possible_action_sequences: Vec<Vec<Vec<Dir>>> = vec![];
 
     for (_target, target_pos) in seq_pos {
-        all_possible_action_sequences.push(find_all_shortest_path_actions(start, target_pos, map));
+        let all_shortest_path_actions = match cache.entry((start, target_pos)) {
+            std::collections::hash_map::Entry::Occupied(occupied_entry) => {
+                occupied_entry.get().clone()
+            }
+            std::collections::hash_map::Entry::Vacant(vacant_entry) => {
+                let actions = find_all_shortest_path_actions(start, target_pos, map);
+                vacant_entry.insert(actions.clone());
+                actions
+            }
+        };
+        all_possible_action_sequences.push(all_shortest_path_actions);
         start = target_pos;
     }
 
@@ -198,6 +209,9 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
 
     let s = Instant::now();
 
+    let mut num_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
+    let mut dir_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
+
     let mut part1 = 0;
     for line in lines {
         let code_value: String = line
@@ -206,24 +220,45 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
             .take_while(|c| c.is_ascii_digit())
             .collect();
         let code_value: i64 = code_value.parse().unwrap();
-        let possible_actions: Vec<Vec<Dir>> =
-            press(&line.chars().collect_vec(), Pos::new(2, 3), 'A', &num_panel);
-        let possible_actions2: Vec<Vec<Dir>> = possible_actions
-            .into_iter()
-            .map(|actions| press(&actions, Pos::new(2, 0), Dir::Activate, &dir_panel))
-            .flatten()
-            .collect();
-        let possible_actions3: Vec<Vec<Dir>> = possible_actions2
-            .into_iter()
-            .map(|actions| press(&actions, Pos::new(2, 0), Dir::Activate, &dir_panel))
-            .flatten()
-            .collect();
+        let mut possible_actions: Vec<Vec<Dir>> = press(
+            &line.chars().collect_vec(),
+            Pos::new(2, 3),
+            'A',
+            &num_panel,
+            &mut num_cache,
+        );
+        println!("Posible actions: {}", possible_actions.len());
+
+        for i in 0..2 {
+            let mut possible_actions2: Vec<Vec<Dir>> = possible_actions
+                .into_iter()
+                .map(|actions| {
+                    press(
+                        &actions,
+                        Pos::new(2, 0),
+                        Dir::Activate,
+                        &dir_panel,
+                        &mut dir_cache,
+                    )
+                })
+                .flatten()
+                .collect();
+            println!("Posible actions {i}: {}", possible_actions2.len());
+            let min_len = possible_actions2.iter().map(|a| a.len()).min().unwrap();
+            possible_actions2.retain_mut(|a| a.len() == min_len);
+            println!(
+                "Posible actions {i}: {} with len {min_len}",
+                possible_actions2.len()
+            );
+            possible_actions = possible_actions2;
+        }
+
         part1 += dbg!(
-            possible_actions3
+            dbg!(possible_actions
                 .into_iter()
                 .map(|actions| actions.len() as i64)
                 .min()
-                .unwrap()
+                .unwrap())
                 * code_value
         );
         // let actions3 = press(&actions2, Pos::new(2, 0), Dir::Activate, &dir_panel);
