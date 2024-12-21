@@ -30,7 +30,7 @@ const DIR_PANEL: &str = r#"
 <v> 
 "#;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum Dir {
     Up,
     Down,
@@ -41,14 +41,18 @@ enum Dir {
 
 impl Display for Dir {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let c = match self {
-            Dir::Up => '^',
-            Dir::Down => 'v',
-            Dir::Left => '<',
-            Dir::Right => '>',
-            Dir::Activate => 'A',
-        };
-        f.write_char(c)
+        write!(f, "{self:?}")
+    }
+}
+impl Debug for Dir {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Dir::Up => f.write_char('^'),
+            Dir::Down => f.write_char('v'),
+            Dir::Left => f.write_char('<'),
+            Dir::Right => f.write_char('>'),
+            Dir::Activate => f.write_char('A'),
+        }
     }
 }
 
@@ -185,6 +189,59 @@ fn generate_all<T: Clone + Debug>(actions_per_step: &[Vec<Vec<T>>]) -> Vec<Vec<T
     ret
 }
 
+fn solve_for_code(
+    line: &str,
+    mid_layers: usize,
+    num_panel: &[Vec<Option<char>>],
+    dir_panel: &[Vec<Option<Dir>>],
+) -> u64 {
+    println!("Solving '{line}' for {mid_layers} middle layers");
+    let mut num_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
+    let mut dir_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
+
+    let mut possible_actions: Vec<Vec<Dir>> = press(
+        &line.chars().collect_vec(),
+        Pos::new(2, 3),
+        'A',
+        &num_panel,
+        &mut num_cache,
+    );
+    println!("Posible actions: {}", possible_actions.len());
+    for act in &possible_actions {
+        println!("\t{}", act.iter().map(|d| d.to_string()).join(""));
+    }
+
+    for i in 0..mid_layers {
+        let mut possible_actions2: Vec<Vec<Dir>> = possible_actions
+            .into_iter()
+            .map(|actions| {
+                press(
+                    &actions,
+                    Pos::new(2, 0),
+                    Dir::Activate,
+                    &dir_panel,
+                    &mut dir_cache,
+                )
+            })
+            .flatten()
+            .collect();
+        println!("Posible actions {i}: {}", possible_actions2.len());
+        let min_len = possible_actions2.iter().map(|a| a.len()).min().unwrap();
+        possible_actions2.retain_mut(|a| a.len() == min_len);
+        println!(
+            "Posible actions {i}: {} with len {min_len}",
+            possible_actions2.len()
+        );
+        possible_actions = possible_actions2;
+    }
+
+    dbg!(possible_actions
+        .into_iter()
+        .map(|actions| actions.len() as u64)
+        .min()
+        .unwrap())
+}
+
 pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duration> {
     let lines: Vec<String> = tokens(input, None);
     let num_panel: Vec<Vec<Option<char>>> = tokens::<String>(NUM_PANEL, None)
@@ -209,9 +266,6 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
 
     let s = Instant::now();
 
-    let mut num_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
-    let mut dir_cache: FxHashMap<(Pos, Pos), Vec<Vec<Dir>>> = Default::default();
-
     let mut part1 = 0;
     for line in lines {
         let code_value: String = line
@@ -219,53 +273,13 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
             .skip_while(|c| !c.is_ascii_digit())
             .take_while(|c| c.is_ascii_digit())
             .collect();
-        let code_value: i64 = code_value.parse().unwrap();
-        let mut possible_actions: Vec<Vec<Dir>> = press(
-            &line.chars().collect_vec(),
-            Pos::new(2, 3),
-            'A',
-            &num_panel,
-            &mut num_cache,
-        );
-        println!("Posible actions: {}", possible_actions.len());
+        let code_value: u64 = code_value.parse().unwrap();
+        let shortest_steps = solve_for_code(&line, 2, &num_panel, &dir_panel);
 
-        for i in 0..2 {
-            let mut possible_actions2: Vec<Vec<Dir>> = possible_actions
-                .into_iter()
-                .map(|actions| {
-                    press(
-                        &actions,
-                        Pos::new(2, 0),
-                        Dir::Activate,
-                        &dir_panel,
-                        &mut dir_cache,
-                    )
-                })
-                .flatten()
-                .collect();
-            println!("Posible actions {i}: {}", possible_actions2.len());
-            let min_len = possible_actions2.iter().map(|a| a.len()).min().unwrap();
-            possible_actions2.retain_mut(|a| a.len() == min_len);
-            println!(
-                "Posible actions {i}: {} with len {min_len}",
-                possible_actions2.len()
-            );
-            possible_actions = possible_actions2;
-        }
-
-        part1 += dbg!(
-            dbg!(possible_actions
-                .into_iter()
-                .map(|actions| actions.len() as i64)
-                .min()
-                .unwrap())
-                * code_value
-        );
-        // let actions3 = press(&actions2, Pos::new(2, 0), Dir::Activate, &dir_panel);
+        part1 += dbg!(dbg!(shortest_steps) * code_value);
     }
 
     dbg!(&part1);
-    // panic!();
 
     let e = s.elapsed();
 
@@ -279,6 +293,7 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
     }
     Ok(e)
 }
+
 pub fn dijkstra<T, P, V>(
     start: &[T],
     neighbours_of: impl Fn(&T) -> V,
