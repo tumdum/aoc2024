@@ -129,16 +129,16 @@ fn press<T: Clone + Hash + Debug + PartialEq>(
             }
             ret
         };
-        // let prev = bfs(start, |p: &Pos| *p == target_pos, neighbours);
-        let (_, prev) = dijkstra(&[start], neighbours);
-        let all_shortest_paths = paths(&start, &target_pos, &prev);
+
+        let all_shortest_paths = find_all_shortest_paths(start, target_pos, map);
+
         for mut path in all_shortest_paths {
             path.reverse();
             let mut dirs = positions_to_dirs(&path);
             dirs.push(Dir::Activate);
             actions_for_target.push(dirs);
         }
-        // panic!();
+
         all_possible_action_sequences.push(actions_for_target);
         start = target_pos;
     }
@@ -148,6 +148,26 @@ fn press<T: Clone + Hash + Debug + PartialEq>(
         .collect();
 
     ret.into_iter().collect_vec()
+}
+
+fn find_all_shortest_paths<T: Clone>(
+    start: Pos,
+    target: Pos,
+    map: &[Vec<Option<T>>],
+) -> Vec<Vec<Pos>> {
+    let neighbours = |p: &Pos| -> Vec<(Pos, i64)> {
+        let mut ret = vec![];
+        for d in DIRS {
+            let next = d + *p;
+            if let Some(Some(_)) = next.get(map) {
+                ret.push((next, 1));
+            }
+        }
+        ret
+    };
+
+    let (_, prev) = dijkstra(&[start], neighbours);
+    paths(&start, &target, &prev)
 }
 
 fn generate_all<T: Clone + Debug>(actions_per_step: &[Vec<Vec<T>>]) -> Vec<Vec<T>> {
