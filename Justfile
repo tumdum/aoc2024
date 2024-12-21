@@ -20,6 +20,9 @@ fetch day:
     cookie=`binarycookies -filter adventofcode.com ~/Library/Containers/com.apple.Safari/Data/Library/Cookies/Cookies.binarycookies | rg session | sed 's/.* session \([^ ]*\).*/\1/g'`
     curl --silent --cookie "session=$cookie" 'https://adventofcode.com/2024/day/{{ day }}/input' > inputs/$name
 
+solutions:
+    cargo run --release -- --loops 10 --skip-output
+
 encrypt day:
     #!/usr/bin/env bash
     set -euxo pipefail
