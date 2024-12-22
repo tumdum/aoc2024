@@ -5,17 +5,16 @@ use std::{
     collections::hash_map::Entry,
     time::{Duration, Instant},
 };
+use wide::i64x4;
 
 use crate::input::tokens;
-
-const MOD: i64 = 16777216;
 
 fn mix(secret: i64, v: i64) -> i64 {
     secret ^ v
 }
 
 fn prune(secret: i64) -> i64 {
-    secret % MOD
+    secret & 0b11111111_11111111_11111111
 }
 
 fn price(secret: i64) -> i64 {
@@ -23,13 +22,26 @@ fn price(secret: i64) -> i64 {
 }
 
 fn next(mut secret: i64) -> i64 {
-    secret = prune(mix(secret, secret * 64));
-    secret = prune(mix(secret, secret / 32));
-    secret = prune(mix(secret, secret * 2048));
+    secret = prune(mix(secret, secret << 6));
+    secret = prune(mix(secret, secret >> 5));
+    secret = prune(mix(secret, secret << 11));
     secret
 }
 
-#[derive(Debug)]
+fn mixw(secret: i64x4, v: i64x4) -> i64x4 {
+    secret ^ v
+}
+fn prunew(secret: i64x4) -> i64x4 {
+    secret & i64x4::new([0b11111111_11111111_11111111; 4])
+}
+fn nextw(mut secret: i64x4) -> i64x4 {
+    secret = prunew(mixw(secret, secret << 6));
+    secret = prunew(mixw(secret, secret >> 5));
+    secret = prunew(mixw(secret, secret << 11));
+    secret
+}
+
+#[derive(Debug, PartialEq, Eq)]
 struct Secret {
     value: i64,
     price: i64,
@@ -46,6 +58,44 @@ fn next_n(mut secret: i64, n: usize) -> Vec<Secret> {
             value: v,
             price: price(v),
             change: (price(v) - price(secret)) as i8,
+        });
+
+        secret = v;
+    }
+
+    changes
+}
+fn nextw_n(mut secret: i64x4, n: usize) -> [Vec<Secret>; 4] {
+    let mut changes = [
+        Vec::with_capacity(n),
+        Vec::with_capacity(n),
+        Vec::with_capacity(n),
+        Vec::with_capacity(n),
+    ];
+
+    for _ in 0..n {
+        let v = nextw(secret);
+        let arr = v.as_array_ref();
+
+        changes[0].push(Secret {
+            value: arr[0],
+            price: price(arr[0]),
+            change: (price(arr[0]) - price(secret.as_array_ref()[0])) as i8,
+        });
+        changes[1].push(Secret {
+            value: arr[1],
+            price: price(arr[1]),
+            change: (price(arr[1]) - price(secret.as_array_ref()[1])) as i8,
+        });
+        changes[2].push(Secret {
+            value: arr[2],
+            price: price(arr[2]),
+            change: (price(arr[2]) - price(secret.as_array_ref()[2])) as i8,
+        });
+        changes[3].push(Secret {
+            value: arr[3],
+            price: price(arr[3]),
+            change: (price(arr[3]) - price(secret.as_array_ref()[3])) as i8,
         });
 
         secret = v;
@@ -79,10 +129,15 @@ pub fn solve(input: &str, verify_expected: bool, output: bool) -> Result<Duratio
 
     let s = Instant::now();
 
-    let all_price_change: Vec<_> = lines
-        .par_iter()
-        .map(|secret| next_n(*secret, 2000))
+    let mut all_price_change: Vec<_> = lines
+        .par_chunks_exact(4)
+        .flat_map(|v| nextw_n(i64x4::new(v.try_into().unwrap()), 2000))
         .collect();
+
+    let n = lines.len() % 4;
+    for i in lines.len() - n..lines.len() {
+        all_price_change.push(next_n(lines[i], 2000));
+    }
 
     let part1: i64 = all_price_change
         .par_iter()
@@ -132,5 +187,20 @@ mod tests {
         assert_eq!(16113920, prune(100000000));
         assert_eq!(15887950, next(123));
         // assert_eq!(5908254, next_n(123, 10));
+    }
+
+    #[test]
+    fn wide() {
+        let normal = [1i64, 2, 3, 4];
+        let normalw = i64x4::new(normal);
+        assert_eq!(
+            nextw(normalw),
+            i64x4::new([
+                next(normal[0]),
+                next(normal[1]),
+                next(normal[2]),
+                next(normal[3])
+            ])
+        );
     }
 }
